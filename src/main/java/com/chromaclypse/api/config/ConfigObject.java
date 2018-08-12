@@ -1,20 +1,44 @@
 package com.chromaclypse.api.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
 import com.chromaclypse.api.Chroma;
+import com.chromaclypse.api.Log;
 import com.chromaclypse.api.config.visitor.ConfigVisitor;
 import com.chromaclypse.api.config.visitor.TrivialVisitor;
 import com.chromaclypse.api.config.visitor.UpdatingVisitor;
+import com.google.common.base.Charsets;
 
 public class ConfigObject {
 	
-	private static Walker configWalker = Chroma.getFactory().construct(Walker.class);
+	private static Walker configWalker = Chroma.get().factory().construct(Walker.class);
+	private String saveLocation = null;
+	
+	public ConfigObject() {
+		Section section = getClass().getAnnotation(Section.class);
+		
+		if(section != null) {
+			saveLocation = section.path();
+			
+			if(!saveLocation.endsWith(".yml")) {
+				saveLocation += ".yml";
+			}
+		}
+		else {
+			saveLocation = "config.yml";
+		}
+	}
 	
 	/**
 	 * Returns the Object found at <tt>path</tt> by walking through this
@@ -56,20 +80,57 @@ public class ConfigObject {
 		return result;
 	}
 	
-	public void init(Plugin parent) {
-		if(!parent.getDataFolder().exists())
-			parent.saveDefaultConfig();
+	private File getFile(Plugin parent) {
+		File target = new File(parent.getDataFolder(), saveLocation);
+		if(!target.exists()) {
+			try {
+				parent.saveResource(saveLocation, false);
+			}
+			catch(IllegalArgumentException e) {
+				// No file in jar. This is fine.
+				try {
+					target.createNewFile();
+				} catch (IOException e1) {
+					// :(
+					Log.getLogger().log(Level.SEVERE, "Failed to create file: " + target.getAbsolutePath(), e1);
+				}
+			}
+		}
 		
-		parent.reloadConfig();
-		if(mergeWith(parent.getConfig()))
-			parent.saveConfig();
+		return target;
+	}
+	
+	private void saveConfigToFile(YamlConfiguration config, File target) {
+		try {
+			config.save(target);
+		}
+		catch(IOException e) {
+			Log.getLogger().log(Level.SEVERE, "Failed to save file: " + target.getAbsolutePath(), e);
+		}
+	}
+	
+	public void init(Plugin parent) {
+		File target = getFile(parent);
+		
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(target);
+		final InputStream defConfigStream = parent.getResource("config.yml");
+        if (defConfigStream == null) {
+            return;
+        }
+
+        config.setDefaults(YamlConfiguration.loadConfiguration(new InputStreamReader(defConfigStream, Charsets.UTF_8)));
+
+		if(mergeWith(config)) {
+			saveConfigToFile(config, target);
+		}
 	}
 	
 	public void save(Plugin parent) {
-		if(!parent.getDataFolder().exists())
-			parent.saveDefaultConfig();
+		File target = getFile(parent);
 		
-		writeTo(parent.getConfig());
+		YamlConfiguration config = new YamlConfiguration();
+		writeTo(config);
+		saveConfigToFile(config, target);
 	}
 	
 	/**

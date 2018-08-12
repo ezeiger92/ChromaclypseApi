@@ -7,20 +7,18 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.SkullType;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.inventory.meta.SpawnEggMeta;
 
 import com.chromaclypse.api.annotation.Mutable;
+import com.chromaclypse.api.json.JsonBlob;
 import com.chromaclypse.api.messages.Text;
 
 /**
@@ -160,17 +158,6 @@ public class ItemBuilder implements Cloneable {
 	}
 	
 	/**
-	 * Constructs an ItemBuilder of a skull. The resulting builder will have the
-	 * material <tt>SKULL_ITEM</tt> and use the desired skull type.
-	 * 
-	 * @param type Type of skull to create
-	 */
-	public ItemBuilder(SkullType type) {
-		this(Material.SKULL_ITEM);
-		skull(type);
-	}
-	
-	/**
      * Returns a reference to our ItemStack so our builder can tweak later
      *
      * @return stack
@@ -267,37 +254,6 @@ public class ItemBuilder implements Cloneable {
 	}
 	
 	/**
-     * Sets material color
-     * Use ItemBuilder.leather(org.bukkit.Color) for leather armor color
-     *
-     * @param color Color of material
-     * 
-     * @return this, for chaining
-     */
-	@SuppressWarnings("deprecation")
-	public @Mutable ItemBuilder color(DyeColor color) {
-		if(resultStack.getType() == Material.INK_SACK)
-			durability(color.getDyeData());
-		else
-			durability(color.getWoolData());
-		
-		return this;
-	}
-	
-	/**
-	 * Sets skull type, given that the current material accepts skull types.
-	 * 
-	 * @param type Desired type of skull
-	 * @return this, for chaining
-	 */
-	public @Mutable ItemBuilder skull(SkullType type) {
-		if(resultStack.getType() == Material.SKULL_ITEM)
-			durability(type.ordinal());
-		
-		return this;
-	}
-	
-	/**
 	 * Sets the skull type to a players head, given that the current material
 	 * accepts skull types. <tt>playerName</tt> must not be null. If you want a
 	 * plain player skull, use
@@ -311,28 +267,12 @@ public class ItemBuilder implements Cloneable {
 	}
 	
 	public @Mutable ItemBuilder skull(OfflinePlayer player) {
-		skull(SkullType.PLAYER);
+		type(Material.PLAYER_HEAD);
 		
 		if(resultStack.getItemMeta() instanceof SkullMeta) {
 			SkullMeta smHolder = (SkullMeta)resultStack.getItemMeta();
 			smHolder.setOwningPlayer(player);
 			resultStack.setItemMeta(smHolder);
-		}
-		
-		return this;
-	}
-	
-	/**
-	 * Sets the mob type, given the current material supports mob types.
-	 * 
-	 * @param entity The type of entity
-	 * @return this, for chaining
-	 */
-	public @Mutable ItemBuilder mob(EntityType entity) {
-		if(resultStack.getItemMeta() instanceof SpawnEggMeta) {
-			SpawnEggMeta meta = (SpawnEggMeta) resultStack.getItemMeta();
-			meta.setSpawnedType(entity);
-			resultStack.setItemMeta(meta);
 		}
 		
 		return this;
@@ -412,7 +352,7 @@ public class ItemBuilder implements Cloneable {
 	 */
 	public @Mutable ItemBuilder display(String displayName) {
 		ItemMeta stackMeta = resultStack.getItemMeta();
-		stackMeta.setDisplayName(Text.colorize(displayName));
+		stackMeta.setDisplayName(Text.format().colorize(displayName));
 		resultStack.setItemMeta(stackMeta);
 		return this;
 	}
@@ -425,7 +365,7 @@ public class ItemBuilder implements Cloneable {
      * @return this, for chaining
      */
 	public @Mutable ItemBuilder lore(String... lore) {
-		return directLore(Arrays.asList(Text.colorizeList(lore)));
+		return directLore(Arrays.asList(Text.format().colorizeList(lore)));
 	}
 	
 	/**
@@ -452,7 +392,7 @@ public class ItemBuilder implements Cloneable {
      */
 	public @Mutable ItemBuilder wrapText(int length, String... text) {
 		text[0] = "&f&o" + text[0];
-		List<String> lines = Text.wrap(length, Text.colorizeList(text));
+		List<String> lines = Text.format().wrap(length, Text.format().colorizeList(text));
 		
 		ItemMeta stackMeta = resultStack.getItemMeta();
 		if(lines.size() > 0) {
@@ -479,7 +419,7 @@ public class ItemBuilder implements Cloneable {
      */
 	public @Mutable ItemBuilder wrapLore(int length, String... lore) {
 		lore[0] = "&f&o" + lore[0];
-		return directLore(Text.wrap(length, Text.colorizeList(lore)));
+		return directLore(Text.format().wrap(length, Text.format().colorizeList(lore)));
 	}
 	
 	public @Mutable ItemBuilder wrapLore(String... text) {
@@ -505,10 +445,39 @@ public class ItemBuilder implements Cloneable {
 		result.add("");
 		
 		for(int i = 0; i < options.length; ++i)
-			result.add(Text.colorize(" &7" + options[i]));
+			result.add(Text.format().colorize(" &7" + options[i]));
 		
-		result.set(index + 1, Text.colorize("&2>" + options[index]));
+		result.set(index + 1, Text.format().colorize("&2>" + options[index]));
 		directLore(result);
+		return this;
+	}
+	
+	private static final String stringOf(JsonBlob blob) {
+		if(blob != null) {
+			return blob.toString().replace("\\", "\\\\").replace("\"", "\\\"");
+		}
+		
+		return "";
+	}
+	
+	@SuppressWarnings("deprecation")
+	public @Mutable ItemBuilder pages(JsonBlob page, JsonBlob... extra) {
+		
+		if(!(resultStack.getItemMeta() instanceof BookMeta)) {
+			type(Material.WRITTEN_BOOK);
+		}
+		
+		int length = extra.length;
+		StringBuilder pages = new StringBuilder("{pages:[\"").append(stringOf(page)).append('"');
+
+		for (int i = 0; i < length; ++i) {
+			pages.append(",\"").append(stringOf(extra[i])).append('"');
+		}
+
+		pages.append("]}");
+		
+		Bukkit.getUnsafe().modifyItemStack(resultStack, pages.toString());
+		
 		return this;
 	}
 

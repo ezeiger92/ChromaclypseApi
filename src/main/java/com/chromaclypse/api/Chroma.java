@@ -1,16 +1,28 @@
 package com.chromaclypse.api;
 
-public class Chroma {
-	private static Factory factory = null;
+import java.util.logging.Logger;
+
+import org.bukkit.plugin.Plugin;
+
+public interface Chroma {
 	
-	public static Factory getFactory() {
-		return factory;
+	Factory factory();
+	Plugin plugin();
+	Logger log();
+	
+	public static Chroma get() {
+		return Impl.chroma;
 	}
 	
-	public static Factory setFactory(Factory newFactory) {
-		Factory old = factory;
-		factory = newFactory;
+	public abstract class Impl implements Chroma {
+		private static Chroma chroma = null;
 		
-		return old;
+		protected Impl() throws IllegalStateException {
+			if(chroma != null) {
+				throw new IllegalStateException("Chroma singleton already constructed");
+			}
+			
+			chroma = this;
+		}
 	}
 }

@@ -7,6 +7,6 @@ import com.chromaclypse.api.Chroma;
 public interface EmptySection extends ConfigurationSection {
 
 	public static EmptySection get() {
-		return Chroma.getFactory().instance(EmptySection.class);
+		return Chroma.get().factory().instance(EmptySection.class);
 	}
 }

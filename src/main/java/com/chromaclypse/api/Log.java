@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Log {
-	protected static Logger activeLogger = Chroma.getFactory().instance(Logger.class);
+	protected static Logger activeLogger = Chroma.get().factory().instance(Logger.class);
 	
 	public static void log(Level level, String message) {		
 		activeLogger.log(level, message);
@@ -36,5 +36,9 @@ public class Log {
 	
 	public static void finest(String message) {
 		activeLogger.finest(message);
+	}
+	
+	public static Logger getLogger() {
+		return activeLogger;
 	}
 }
