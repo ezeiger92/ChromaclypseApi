@@ -13,32 +13,67 @@ import java.util.Set;
  * @author    Erik Zeiger
  * @version   1.1
  * @date      2017-
- * @warning   Keys() needs either arguments or an explicit type when chained with Values().
+ * @warning   keys() needs either arguments or an explicit type when chained with values().
  * @copyright MIT License
  *
  */
 public class Defaults {
 
 	@SafeVarargs
+	public static <T> List<T> list(T e, T... extra) {
+		ArrayList<T> result = new ArrayList<>(extra.length + 1);
+		result.add(e);
+		result.addAll(Arrays.asList(extra));
+		
+		return result;
+	}
+
+	@Deprecated
+	@SafeVarargs
 	public static <T> List<T> List(T... args) {
-		return new ArrayList<>(Arrays.asList(args));
+		if(args.length > 0) {
+			return new ArrayList<>(Arrays.asList(args));
+		}
+		
+		return emptyList();
 	}
 	
 	@SafeVarargs
-	public static <K> KeySet<K> Keys(K... args) {
+	public static <K> KeySet<K> keys(K... args) {
 		return new KeySet<>(args);
 	}
+
+	@Deprecated
+	@SafeVarargs
+	public static <K> KeySet<K> Keys(K... args) {
+		return keys(args);
+	}
 	
-	public static <T> List<T> EmptyList() {
+	public static <T> List<T> emptyList() {
 		return new ArrayList<>();
 	}
 	
-	public static <K, V> Map<K, V> EmptyMap() {
-		return new HashMap<>();
+	@Deprecated
+	public static <T> List<T> EmptyList() {
+		return emptyList();
 	}
 	
-	public static <T> Set<T> EmptySet() {
+	public static <K, V> Map<K, V> emptyMap() {
+		return new HashMap<>();
+	}
+
+	@Deprecated
+	public static <K, V> Map<K, V> EmptyMap() {
+		return emptyMap();
+	}
+	
+	public static <T> Set<T> emptySet() {
 		return new HashSet<>();
+	}
+
+	@Deprecated
+	public static <T> Set<T> EmptySet() {
+		return emptySet();
 	}
 	
 	public static class Pair<K,V> {
@@ -91,8 +126,8 @@ public class Defaults {
 		}
 		
 		@SafeVarargs
-		public final <V> Map<K,V> Values(V... args) {
-			Map<K,V> result = new HashMap<>();
+		public final <V> Map<K,V> values(V... args) {
+			Map<K,V> result = emptyMap();
 			
 			if(keys.length != args.length) {
 				// Length mismatch warning
@@ -105,6 +140,12 @@ public class Defaults {
 					result.put(keys[i], null);
 			
 			return result;
+		}
+		
+		@Deprecated
+		@SafeVarargs
+		public final <V> Map<K,V> Values(V... args) {
+			return values(args);
 		}
 	}
 }

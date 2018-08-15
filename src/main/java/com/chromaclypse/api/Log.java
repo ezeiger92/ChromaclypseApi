@@ -3,8 +3,12 @@ package com.chromaclypse.api;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Log {
-	protected static Logger activeLogger = Chroma.get().factory().instance(Logger.class);
+public final class Log {
+	
+	private Log() {
+	}
+	
+	private final static Logger activeLogger = Chroma.get().factory().instance(Logger.class);
 	
 	public static void log(Level level, String message) {		
 		activeLogger.log(level, message);

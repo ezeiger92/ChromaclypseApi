@@ -15,7 +15,7 @@ import org.bukkit.plugin.PluginManager;
  *
  */
 public abstract class FuturePlugin implements Listener {
-	private String pluginName;
+	private final String pluginName;
 	
 	public FuturePlugin(Plugin callingPlugin, String desiredPluginName) {
 		pluginName = desiredPluginName;

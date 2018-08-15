@@ -16,6 +16,10 @@ public class RelativeFace {
 		this.facing = facing;
 	}
 	
+	public BlockFace getFacing() {
+		return facing;
+	}
+	
 	public RelativeFace toLeft() {
 		return toLeft(defaultRotation);
 	}

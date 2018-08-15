@@ -1,8 +1,12 @@
 package com.chromaclypse.api.placeholder;
 
-public class Context {
+public abstract class Context {
 	@SuppressWarnings("unchecked")
-	public <T extends Context> T getInterface() {
+	public final <T extends Context> T asInterface() {
 		return (T)this;
+	}
+	
+	public final <T extends Context> T asInterface(Class<T> clazz) {
+		return asInterface();
 	}
 }

@@ -2,11 +2,13 @@ package com.chromaclypse.api.placeholder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.bukkit.entity.Player;
 
 public class Placeholder {
 	Map<String, Fragment> placeholderMap = new HashMap<>();
+	Map<String, Function<Context, Object>> phm = new HashMap<>();
 
 	public static class PlayerContext extends Context {
 		private Player object;
@@ -42,16 +44,18 @@ public class Placeholder {
 	public Placeholder() {
 		placeholderMap.put("player", new Fragment() {
 			public Object onExecute(Context context) {
-				PlayerContext pc = context.getInterface();
+				PlayerContext pc = context.asInterface();
 				return pc.getPlayer().getName();
 			}
 		});
+		
+		phm.put("player", c -> c.asInterface(PlayerContext.class).getPlayer().getName());
 		
 		placeholderMap.put("test", new Fragment() {
 
 			@Override
 			public Object onExecute(Context context) {
-				GenericContext<Player> c = context.getInterface();
+				GenericContext<Player> c = context.asInterface();
 				return c.get().getName();
 			}
 			
