@@ -116,16 +116,30 @@ public class JsonBlob {
 
 				Prop nextColor = color;
 				Prop nextStyle = style;
+				
+				Prop fromChar = ofChar(c, normal);
+				
+				if(fromChar != Prop.NONE) {
+					if(c <= 'f' || c == 'r') {
+						nextColor = fromChar;
+						nextStyle = Prop.NONE;
+						valid = true;
+					}
+					else {
+						nextStyle = fromChar;
+						valid = true;
+					}
+				}
 
-				if ("0123456789abcdefr".indexOf(c) != -1) {
+				/*if ("0123456789abcdefr".indexOf(c) != -1) {
 					nextColor = ofChar(c, normal);
 					nextStyle = Prop.NONE;
 					valid = true;
 				}
-				else if ("olmnk".indexOf(c) != -1) {
+				else if ("klmno".indexOf(c) != -1) {
 					nextStyle = ofChar(c, normal);
 					valid = true;
-				}
+				}*/
 
 				if (valid) {
 					if (start != end)
