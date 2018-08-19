@@ -20,8 +20,7 @@ public interface Template {
 		
 		@Override
 		public String[] format(Plugin plugin, String message, String... extra) {
-			// TODO Auto-generated method stub
-			return null;
+			return new String[] {"" + prefix + primary + highlight };
 		}
 		
 	}
