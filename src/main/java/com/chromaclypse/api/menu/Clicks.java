@@ -9,7 +9,7 @@ public class Clicks {
 	public static int number(InventoryClickEvent event, int amount, int shiftModifier) {
 		switch(event.getClick()) {
 			case NUMBER_KEY: {
-				return amount * 10 + event.getHotbarButton();
+				return amount * 10 + event.getHotbarButton() + 1;
 			}
 
 			case DROP: {
