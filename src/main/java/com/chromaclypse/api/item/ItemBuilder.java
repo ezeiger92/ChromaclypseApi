@@ -13,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -57,7 +58,7 @@ public class ItemBuilder implements Cloneable {
 		if(left == null || right == null)
 			return left == right;
 		
-		if(left.getType() != right.getType() || left.getDurability() != right.getDurability())
+		if(left.getType() != right.getType())
 			return false;
 		
 		boolean hasMetaLeft = left.hasItemMeta();
@@ -233,7 +234,14 @@ public class ItemBuilder implements Cloneable {
      * @return this, for chaining
      */
 	public @Mutable ItemBuilder durability(short durability) {
-		resultStack.setDurability(durability);
+
+		if(resultStack.getItemMeta() instanceof Damageable) {
+			ItemMeta meta = resultStack.getItemMeta();
+			((Damageable)meta).setDamage(durability);
+
+			resultStack.setItemMeta(meta);
+		}
+		
 		return this;
 	}
 	
