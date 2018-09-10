@@ -89,6 +89,7 @@ public class ConfigObject {
 			catch(IllegalArgumentException e) {
 				// No file in jar. This is fine.
 				try {
+					target.getParentFile().mkdirs();
 					target.createNewFile();
 				} catch (IOException e1) {
 					// :(
