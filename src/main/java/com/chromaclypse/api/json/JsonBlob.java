@@ -33,6 +33,13 @@ public class JsonBlob {
 
 		return this;
 	}
+	
+	public JsonBlob add(JsonBlob blob) {
+		if (builder.length() > 0 && blob.builder.length() > 0)
+			builder.append(',').append(blob.builder);
+		
+		return this;
+	}
 
 	@Override
 	public String toString() {
@@ -130,16 +137,6 @@ public class JsonBlob {
 						valid = true;
 					}
 				}
-
-				/*if ("0123456789abcdefr".indexOf(c) != -1) {
-					nextColor = ofChar(c, normal);
-					nextStyle = Prop.NONE;
-					valid = true;
-				}
-				else if ("klmno".indexOf(c) != -1) {
-					nextStyle = ofChar(c, normal);
-					valid = true;
-				}*/
 
 				if (valid) {
 					if (start != end)
