@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import com.chromaclypse.api.annotation.Mutable;
+import com.chromaclypse.api.annotation.Nullable;
 import com.chromaclypse.api.json.JsonBlob;
 import com.chromaclypse.api.messages.Text;
 
@@ -358,9 +359,9 @@ public class ItemBuilder implements Cloneable {
 	 * @param displayName The new name
 	 * @return this, for chaining
 	 */
-	public @Mutable ItemBuilder display(String displayName) {
+	public @Mutable ItemBuilder display(@Nullable String displayName) {
 		ItemMeta stackMeta = resultStack.getItemMeta();
-		stackMeta.setDisplayName(Text.format().colorize(displayName));
+		stackMeta.setDisplayName(displayName != null ? Text.format().colorize(displayName) : null);
 		resultStack.setItemMeta(stackMeta);
 		return this;
 	}
@@ -383,7 +384,7 @@ public class ItemBuilder implements Cloneable {
      * 
      * @return this, for chaining
      */
-	public @Mutable ItemBuilder directLore(List<String> lore) {
+	public @Mutable ItemBuilder directLore(@Nullable List<String> lore) {
 		ItemMeta stackMeta = resultStack.getItemMeta();
 		stackMeta.setLore(lore);
 		resultStack.setItemMeta(stackMeta);
@@ -398,22 +399,28 @@ public class ItemBuilder implements Cloneable {
      * 
      * @return this, for chaining
      */
-	public @Mutable ItemBuilder wrapText(int length, String... text) {
-		text[0] = "&f&o" + text[0];
-		List<String> lines = Text.format().wrap(length, Text.format().colorizeList(text));
-		
+	public @Mutable ItemBuilder wrapText(int length, @Nullable String... text) {
 		ItemMeta stackMeta = resultStack.getItemMeta();
-		if(lines.size() > 0) {
-			stackMeta.setDisplayName(lines.get(0));
-			lines.remove(0);
+		
+		if(text != null) {
+			text[0] = "&f&o" + text[0];
+			List<String> lines = Text.format().wrap(length, Text.format().colorizeList(text));
+			if(lines.size() > 0) {
+				stackMeta.setDisplayName(lines.get(0));
+				lines.remove(0);
+			}
+			stackMeta.setLore(lines);
 		}
-		stackMeta.setLore(lines);
+		else {
+			stackMeta.setLore(null);
+		}
+		
 		resultStack.setItemMeta(stackMeta);
 		
 		return this;
 	}
 	
-	public @Mutable ItemBuilder wrapText(String... text) {
+	public @Mutable ItemBuilder wrapText(@Nullable String... text) {
 		return wrapText(32, text);
 	}
 	

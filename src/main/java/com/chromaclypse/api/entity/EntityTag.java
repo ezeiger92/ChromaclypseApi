@@ -4,6 +4,7 @@ import org.bukkit.entity.EntityType;
 
 import com.chromaclypse.api.item.ItemTag;
 
+@Deprecated
 public class EntityTag extends ItemTag {
 	
 	EntityTag(EntityType base) {
@@ -31,7 +32,6 @@ public class EntityTag extends ItemTag {
 	 * @param ent Enum entity
 	 * @return NMS entity name
 	 */
-	@SuppressWarnings("deprecation")
 	public static String entityNameLookup(EntityType ent) {
 		return ent.getName();
 	}

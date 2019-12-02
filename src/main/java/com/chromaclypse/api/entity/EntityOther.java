@@ -2,6 +2,7 @@ package com.chromaclypse.api.entity;
 
 import org.bukkit.entity.EntityType;
 
+@Deprecated
 public enum EntityOther {
 	CHARGED_CREEPER(EntityType.CREEPER, "powered:1"),
 	ZOMBIE_FARMER_VILLAGER(    EntityType.ZOMBIE_VILLAGER, "Profession:0"),

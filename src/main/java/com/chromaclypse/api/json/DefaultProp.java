@@ -3,8 +3,8 @@ package com.chromaclypse.api.json;
 import java.util.Map;
 
 public class DefaultProp implements Prop {
-	private String key;
-	private String value;
+	private final String key;
+	private final String value;
 
 	public DefaultProp(String key, String value) {
 		this.key = key;

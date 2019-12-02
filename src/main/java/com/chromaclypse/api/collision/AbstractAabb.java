@@ -12,6 +12,7 @@ public abstract class AbstractAabb implements Cloneable {
 	
 	public abstract Vector getMin();
 	public abstract Vector getMax();
+	public abstract Vector getCenter();
 	
 	public abstract double getSurfaceArea();
 	

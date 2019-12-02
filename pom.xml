@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.chromaclypse.api</groupId>
 	<artifactId>ChromaclypseApi</artifactId>
-	<version>1.3.0</version>
+	<version>1.4.2</version>
 	<build>
 		<resources>
 			<resource>
@@ -20,6 +20,18 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<!-- Surefire and failsafe added to support JUnit 5 tests -->
+			<!-- https://dzone.com/articles/why-your-junit-5-tests-are-not-running-under-maven -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.22.0</version>
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
@@ -34,8 +46,20 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.13.1-R0.1-SNAPSHOT</version>
+			<version>1.14.3-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.4.2</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-params</artifactId>
+			<version>5.4.2</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<properties>

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import com.chromaclypse.api.messages.Text;
 
 public class JsonBlob {
-	StringBuilder builder = new StringBuilder();
+	private final StringBuilder builder = new StringBuilder();
 
 	public JsonBlob() {
 	}

@@ -2,6 +2,7 @@ package com.chromaclypse.api.geometry;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -9,8 +10,9 @@ import org.bukkit.World;
 import org.bukkit.util.Vector;
 
 import com.chromaclypse.api.collision.AbstractAabb;
+import com.chromaclypse.api.collision.CollisionData;
 
-public class DynamicAabbTree {
+public class DynamicAabbTree implements Iterable<CollisionData> {
 	private Node root = null;
 	private int nextInsertIndex = Integer.MIN_VALUE;
 	private HashMap<Integer, Node> nodes = new HashMap<>();
@@ -19,6 +21,7 @@ public class DynamicAabbTree {
 	private static final double expansionFactor = 0.1;
 	
 	private static class Node {
+		private int mIndex;
 		private Node mParent;
 		private AbstractAabb mAabb;
 		private Object mUserData;
@@ -27,7 +30,8 @@ public class DynamicAabbTree {
 		private Node mRight = null;
 		private int mHeight = 0;
 		
-		private Node(Node parent, AbstractAabb aabb, Object userData) {
+		private Node(int index, Node parent, AbstractAabb aabb, Object userData) {
+			mIndex = index;
 			mParent = parent;
 			mAabb = aabb;
 			mUserData = userData;
@@ -118,7 +122,7 @@ public class DynamicAabbTree {
 	}
 	
 	private Node store(int index, Node parent, AbstractAabb aabb, Object clientData) {
-		Node node = new Node(parent, aabb, clientData);
+		Node node = new Node(index, parent, aabb, clientData);
 		nodes.put(index, node);
 		
 		return node;
@@ -126,7 +130,7 @@ public class DynamicAabbTree {
 	
 	private void doInsertion(int index, Node start, AbstractAabb aabb, Object clientData, int depth) {
 		if(start.mHeight == 0) {
-			Node fork = new Node(start.mParent, aabb.combinedWith(start.mAabb), null);
+			Node fork = new Node(index, start.mParent, aabb.combinedWith(start.mAabb), null);
 			
 			fork.mLeft = start;
 			fork.mRight = store(index, fork, aabb, clientData);
@@ -234,12 +238,12 @@ public class DynamicAabbTree {
 		return nodes.get(index);
 	}
 	
-	private void recursePoint(Node start, Vector point, List<Object> results) {
+	private void recursePoint(Node start, Vector point, List<CollisionData> results) {
 
 		if(start != null) {
 			if(start.mAabb.contains(point)) {
 				if(start.mHeight == 0) {
-					results.add(start.mUserData);
+					results.add(new CollisionData(start.mIndex, start.mAabb, start.mUserData));
 				}
 				else {
 					recursePoint(start.mLeft, point, results);
@@ -250,16 +254,40 @@ public class DynamicAabbTree {
 		}
 	}
 	
-	public List<Object> queryPoint(Vector point) {
-		List<Object> results = new ArrayList<>();
+	private void recurseArea(Node start, AbstractAabb bounds, List<CollisionData> results) {
+
+		if(start != null) {
+			if(start.mAabb.intersects(bounds)) {
+				if(start.mHeight == 0) {
+					results.add(new CollisionData(start.mIndex, start.mAabb, start.mUserData));
+				}
+				else {
+					recurseArea(start.mLeft, bounds, results);
+					recurseArea(start.mRight, bounds, results);
+				}
+			}
+			
+		}
+	}
+	
+	public List<CollisionData> queryArea(AbstractAabb bounds) {
+		List<CollisionData> results = new ArrayList<>();
+		recurseArea(root, bounds, results);
+		
+		return results;
+		
+	}
+	
+	public List<CollisionData> queryPoint(Vector point) {
+		List<CollisionData> results = new ArrayList<>();
 		recursePoint(root, point, results);
 		
 		return results;
 		
 	}
 	
-	public List<Object> queryPoint(Location point) {
-		List<Object> results = new ArrayList<>();
+	public List<CollisionData> queryPoint(Location point) {
+		List<CollisionData> results = new ArrayList<>();
 		
 		if(point.getWorld() == mWorld) {
 			recursePoint(root, point.toVector(), results);
@@ -270,5 +298,32 @@ public class DynamicAabbTree {
 	
 	public World getWorld() {
 		return mWorld;
+	}
+	
+	public class LeafIterator implements Iterator<CollisionData> {
+		private Iterator<Node> innerIt;
+		
+		public LeafIterator() {
+			innerIt = nodes.values().iterator();
+		}
+		
+		@Override
+		public boolean hasNext() {
+			return innerIt.hasNext();
+		}
+
+		@Override
+		public CollisionData next() {
+			Node node = innerIt.next();
+			CollisionData result = new CollisionData(node.mIndex, node.mAabb, node.mUserData);
+			
+			return result;
+		}
+		
+	}
+
+	@Override
+	public Iterator<CollisionData> iterator() {
+		return new LeafIterator();
 	}
 }

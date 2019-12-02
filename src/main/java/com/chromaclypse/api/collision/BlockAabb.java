@@ -131,6 +131,11 @@ public class BlockAabb extends AbstractAabb {
 	}
 	
 	@Override
+	public Vector getCenter() {
+		return new Vector((mMin.mX + mMax.mX) >> 1, (mMin.mY + mMax.mY) >> 1, (mMin.mZ + mMax.mZ) >> 1);
+	}
+	
+	@Override
 	public double getSurfaceArea() {
 		int dx = mMax.mX - mMin.mX;
 		int dy = mMax.mY - mMin.mY;

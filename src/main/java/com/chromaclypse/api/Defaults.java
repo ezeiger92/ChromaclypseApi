@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -108,7 +109,15 @@ public class Defaults {
 		
 		@Override
 		public boolean equals(Object left) {
-			return hashCode() == left.hashCode();
+			if(left instanceof Pair) {
+				Pair<?,?> that = (Pair<?,?>) left;
+				
+				return
+					Objects.equals(val1, that.val1) &&
+					Objects.equals(val2, that.val2);
+			}
+			
+			return false;
 		}
 		
 		@Override

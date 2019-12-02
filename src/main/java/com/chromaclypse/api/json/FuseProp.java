@@ -3,7 +3,7 @@ package com.chromaclypse.api.json;
 import java.util.Map;
 
 public class FuseProp implements Prop {
-	private Prop[] props;
+	private final Prop[] props;
 
 	public FuseProp(Prop... props) {
 		this.props = props;

@@ -72,6 +72,11 @@ public class Aabb extends AbstractAabb {
 	}
 	
 	@Override
+	public Vector getCenter() {
+		return mMin.getMidpoint(mMax);
+	}
+	
+	@Override
 	public double getSurfaceArea() {
 		double dx = mMax.getX() - mMin.getX();
 		double dy = mMax.getY() - mMin.getY();

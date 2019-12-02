@@ -60,7 +60,7 @@ public interface Formatter {
 	default String commas(long value) {
 		StringBuilder builder = new StringBuilder(String.valueOf(value)).reverse();
 
-		for(int i = 4; i < builder.length(); i += 4) {
+		for(int i = 3; i < builder.length(); i += 4) {
 			builder.insert(i, ',');
 		}
 

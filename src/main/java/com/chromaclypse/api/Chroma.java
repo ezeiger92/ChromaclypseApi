@@ -10,11 +10,12 @@ public interface Chroma {
 	Plugin plugin();
 	Logger log();
 	
-	public static Chroma get() {
+	static Chroma get() {
 		return Impl.chroma;
 	}
 	
-	public abstract class Impl implements Chroma {
+	@Deprecated
+	abstract class Impl implements Chroma {
 		private static Chroma chroma = null;
 		
 		protected Impl() throws IllegalStateException {

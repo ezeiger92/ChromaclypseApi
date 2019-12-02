@@ -8,7 +8,8 @@ public final class Log {
 	private Log() {
 	}
 	
-	private final static Logger activeLogger = Chroma.get().factory().instance(Logger.class);
+	private final static Logger activeLogger =
+			Chroma.get().factory().construct(Logger.class);
 	
 	public static void log(Level level, String message) {		
 		activeLogger.log(level, message);

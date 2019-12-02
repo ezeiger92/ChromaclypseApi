@@ -1,5 +1,6 @@
 package com.chromaclypse.api.item;
 
+@Deprecated
 public class ItemTag {
 	private boolean first = true;
 	private String tagBegin = "{";

@@ -2,7 +2,7 @@ package com.chromaclypse.api;
 
 import java.util.Optional;
 
-import org.bukkit.Bukkit;
+import org.bukkit.plugin.ServicesManager;
 
 /**
  * Single purpose class for quickly accessing services registered with Bukkit.
@@ -15,6 +15,9 @@ public final class BukkitService {
 
 	private BukkitService() {
 	}
+	
+	private final static ServicesManager servicesManager =
+			Chroma.get().factory().construct(ServicesManager.class);
 
 	/**
 	 * Retrieves a service provider from Bukkit given the interface it implements.
@@ -23,7 +26,7 @@ public final class BukkitService {
 	 * @return The service provider
 	 */
 	public static <T> Optional<T> find(Class<T> clazz) {
-		return Optional.ofNullable(Bukkit.getServer().getServicesManager().getRegistration(clazz))
+		return Optional.ofNullable(servicesManager.getRegistration(clazz))
 				.map(service -> service.getProvider());
 	}
 }
