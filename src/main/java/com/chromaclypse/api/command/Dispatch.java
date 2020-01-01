@@ -11,6 +11,7 @@ import org.bukkit.command.CommandSender;
 
 import com.chromaclypse.api.messages.Text;
 
+@Deprecated
 public class Dispatch implements CommandExecutor {
 	@FunctionalInterface
 	private static interface FunctionEx<T, R> {
@@ -79,9 +80,11 @@ public class Dispatch implements CommandExecutor {
 			try {
 				return callback.apply(new Context(arg0, arg1, arg2, arg3));
 			}
-			catch(Exception e) {
+			catch(Throwable e) {
+				if(e.getCause() != null) {
+					e = e.getCause();
+				}
 				arg0.sendMessage(Text.format().colorize("&cError: " + e.getMessage()));
-				e.printStackTrace();
 			}
 		}
 		

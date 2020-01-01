@@ -475,15 +475,19 @@ public class ItemBuilder implements Cloneable {
 		return "";
 	}
 	
-	@SuppressWarnings("deprecation")
 	public @Mutable ItemBuilder pages(JsonBlob page, JsonBlob... extra) {
+		return pages("Book", "Plugin", page, extra);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public @Mutable ItemBuilder pages(String title, String author, JsonBlob page, JsonBlob... extra) {
 		
 		if(!(resultStack.getItemMeta() instanceof BookMeta)) {
 			type(Material.WRITTEN_BOOK);
 		}
 		
 		int length = extra.length;
-		StringBuilder pages = new StringBuilder("{pages:[\"").append(stringOf(page)).append('"');
+		StringBuilder pages = new StringBuilder("{title:\"" + title +"\",author:\"" + author + "\",pages:[\"").append(stringOf(page)).append('"');
 
 		for (int i = 0; i < length; ++i) {
 			pages.append(",\"").append(stringOf(extra[i])).append('"');
