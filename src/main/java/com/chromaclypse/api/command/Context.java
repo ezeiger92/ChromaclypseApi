@@ -54,12 +54,16 @@ public class Context {
 	}
 	
 	public <T> T GetArg(int index, Function<String, T> op) {
+		return GetArg(index, op, "expected type");
+	}
+	
+	public <T> T GetArg(int index, Function<String, T> op, String typeName) {
 		String temp = GetArg(index);
 		try {
 			return op.apply(temp);
 		}
 		catch(Exception e) {
-			throw new IllegalArgumentException("Could not convert string " + temp + " to expected type", e);
+			throw new IllegalArgumentException("Could not convert string " + temp + " to " + typeName, e);
 		}
 	}
 	
