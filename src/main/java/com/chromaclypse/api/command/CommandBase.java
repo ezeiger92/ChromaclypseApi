@@ -30,7 +30,7 @@ public class CommandBase {
 		return with().calls(callback);
 	}
 	
-	public Handler getCommand() {
+	public TabExecutor getCommand() {
 		return new Handler(root);
 	}
 	
@@ -68,6 +68,7 @@ public class CommandBase {
 	
 	public static class CommandNode {
 		private final int depth;
+		private String permission = "*";
 		private Map<String, CommandNode> children = new HashMap<>();
 		private Function<Context, Boolean> operation = null;
 		private Function<Context, List<String>> suggestions = null;
@@ -91,7 +92,13 @@ public class CommandBase {
 				}
 			}
 			
-			List<String> result = childList(context);
+			CommandSender sender = context.Sender();
+			
+			List<String> result = children.entrySet().stream()
+					.filter(e -> sender.hasPermission(e.getValue().permission))
+					.map(e -> e.getKey())
+					.collect(Collectors.toCollection(ArrayList::new));
+			
 			if(suggestions != null) {
 				result.addAll(suggestions.apply(context));
 			}
@@ -103,11 +110,13 @@ public class CommandBase {
 					.collect(Collectors.toList());
 		}
 		
-		private List<String> childList(Context context) {
-			return new ArrayList<>(children.keySet());
-		}
-		
 		public boolean execute(Context context) {
+			CommandSender sender = context.Sender();
+			
+			if("*" != permission && "" != permission && !sender.hasPermission(permission)) {
+				throw new IllegalArgumentException("You don't have permission for that!");
+			}
+			
 			if(context.Args().length > depth) {
 				CommandNode child = children.get(context.Args()[depth]);
 				if(child != null) {
@@ -202,6 +211,11 @@ public class CommandBase {
 			return this;
 		}
 		
+		public OperationBuilder requires(String permission) {
+			current.permission = permission;
+			return this;
+		}
+		
 		public CommandBase calls(Function<Context,Boolean> callback) {
 			current.operation = callback;
 			root.mergeFrom(tree);
@@ -210,7 +224,7 @@ public class CommandBase {
 		}
 	}
 	
-	public static class Handler implements TabExecutor {
+	private static class Handler implements TabExecutor {
 		private final CommandNode tree;
 		
 		private Handler(CommandNode tree) {
