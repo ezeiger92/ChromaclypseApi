@@ -24,7 +24,8 @@ public class Aabb extends AbstractAabb {
 	}
 	
 	@Override
-	public boolean contains(AbstractAabb area) {
+	public boolean contains(ConvexShape shape) {
+		AbstractAabb area = (AbstractAabb) shape;
 		Vector oMin = area.getMin();
 		Vector oMax = area.getMax();
 		
@@ -34,7 +35,8 @@ public class Aabb extends AbstractAabb {
 	}
 
 	@Override
-	public boolean intersects(AbstractAabb area) {
+	public boolean intersects(ConvexShape shape) {
+		AbstractAabb area = (AbstractAabb) shape;
 		Vector oMin = area.getMin();
 		Vector oMax = area.getMax();
 		
@@ -44,7 +46,8 @@ public class Aabb extends AbstractAabb {
 	}
 
 	@Override
-	public AbstractAabb combinedWith(AbstractAabb other) {
+	public AbstractAabb combinedWith(ConvexShape shape) {
+		AbstractAabb other = (AbstractAabb) shape;
 		Vector oMin = other.getMin();
 		Vector oMax = other.getMax();
 		
@@ -100,5 +103,10 @@ public class Aabb extends AbstractAabb {
 		aabb.mMax = mMax.clone();
 		
 		return aabb;
+	}
+	
+	@Override
+	public String toString() {
+		return "";
 	}
 }

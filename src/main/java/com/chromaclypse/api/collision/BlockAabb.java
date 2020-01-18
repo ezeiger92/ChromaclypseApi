@@ -66,21 +66,25 @@ public class BlockAabb extends AbstractAabb {
 				mMin.mY > y || mMax.mY < y);
 	}
 	
-	private BlockAabb fromAbstractAabb(AbstractAabb aabb) {
+	private BlockAabb fromAbstractAabb(ConvexShape shape) {
 		BlockAabb result;
 		
-		if(aabb instanceof BlockAabb) {
-			result = ((BlockAabb)aabb).clone();
+		if(shape instanceof BlockAabb) {
+			result = ((BlockAabb)shape).clone();
+		}
+		else if(shape instanceof Aabb) {
+			Aabb aabb = (Aabb) shape;
+			result = new BlockAabb(aabb.getMin(), aabb.getMax());
 		}
 		else {
-			result = new BlockAabb(aabb.getMin(), aabb.getMax());
+			throw new ClassCastException("Expected AABB");
 		}
 		
 		return result;
 	}
 	
 	@Override
-	public boolean contains(AbstractAabb area) {
+	public boolean contains(ConvexShape area) {
 		BlockAabb other = fromAbstractAabb(area);
 		Point oMin = other.mMin;
 		Point oMax = other.mMax;
@@ -91,7 +95,7 @@ public class BlockAabb extends AbstractAabb {
 	}
 
 	@Override
-	public boolean intersects(AbstractAabb area) {
+	public boolean intersects(ConvexShape area) {
 		BlockAabb other = fromAbstractAabb(area);
 		Point oMin = other.mMin;
 		Point oMax = other.mMax;
@@ -102,7 +106,7 @@ public class BlockAabb extends AbstractAabb {
 	}
 
 	@Override
-	public AbstractAabb combinedWith(AbstractAabb aabb) {
+	public AbstractAabb combinedWith(ConvexShape aabb) {
 		BlockAabb other = fromAbstractAabb(aabb);
 		Point oMin = other.mMin;
 		Point oMax = other.mMax;
@@ -156,5 +160,10 @@ public class BlockAabb extends AbstractAabb {
 		aabb.mMax = mMax.clone();
 		
 		return aabb;
+	}
+
+	@Override
+	public String toString() {
+		return "";
 	}
 }
