@@ -158,11 +158,11 @@ public class BoundingTree<T extends ConvexShape> implements Iterable<CollisionDa
 			balanceAndUpdate(fork);
 		}
 		else {
-			double totalLeftArea = aabb.combinedWith(start.left.shape).getSurfaceArea()
-					+ start.right.shape.getSurfaceArea();
+			double totalLeftArea = aabb.combinedWith(start.left.shape).getBalancingHeuristic()
+					+ start.right.shape.getBalancingHeuristic();
 			
-			double totalRightArea = aabb.combinedWith(start.right.shape).getSurfaceArea()
-					+ start.left.shape.getSurfaceArea();
+			double totalRightArea = aabb.combinedWith(start.right.shape).getBalancingHeuristic()
+					+ start.left.shape.getBalancingHeuristic();
 			
 			if(totalLeftArea < totalRightArea) {
 				doInsertion(index, start.left, aabb, clientData, ++depth);

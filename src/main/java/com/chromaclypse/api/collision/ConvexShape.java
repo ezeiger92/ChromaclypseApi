@@ -6,7 +6,7 @@ public abstract class ConvexShape implements Cloneable {
 	public abstract boolean contains(Vector location);
 	public abstract boolean contains(ConvexShape other);
 	public abstract boolean intersects(ConvexShape other);
-	public abstract double getSurfaceArea();
+	public abstract double getBalancingHeuristic();
 	
 	public abstract ConvexShape combinedWith(ConvexShape other);
 	public abstract void expandBy(double factor);
