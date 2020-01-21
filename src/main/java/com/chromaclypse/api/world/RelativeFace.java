@@ -38,6 +38,16 @@ public class RelativeFace {
 		return this;
 	}
 	
+	@Override
+	public boolean equals(Object other) {
+		return other instanceof RelativeFace && facing == ((RelativeFace) other).facing;
+	}
+	
+	@Override
+	public int hashCode() {
+		return facing.hashCode();
+	}
+	
 	public static BlockFace toLeft(BlockFace facing) {
 		return toLeft(facing, defaultRotation);
 	}
@@ -151,7 +161,7 @@ public class RelativeFace {
 		public Rotation subtract(Rotation other) {
 			Rotation[] rotations = values();
 			
-			return rotations[(ordinal() - other.ordinal()) % rotations.length];
+			return rotations[(ordinal() - other.ordinal() + rotations.length) % rotations.length];
 		}
 		
 		public Rotation multiply(int times) {
