@@ -78,18 +78,25 @@ public class RomanNumeral {
 	private static int lookupValue(char numeral) {
 		switch(numeral) {
 		case 'I':
+		case 'i':
 			return 1;
 		case 'V':
+		case 'v':
 			return 5;
 		case 'X':
+		case 'x':
 			return 10;
 		case 'L':
+		case 'l':
 			return 50;
 		case 'C':
+		case 'c':
 			return 100;
 		case 'D':
+		case 'd':
 			return 500;
 		case 'M':
+		case 'm':
 			return 1000;
 		default:
 			throw new IllegalArgumentException("Invalid numeral character: '" + numeral + "'");
