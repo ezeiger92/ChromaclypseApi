@@ -29,7 +29,12 @@ public class OperationBuilder {
 	}
 	
 	public OperationBuilder requires(String permission) {
-		current.setPermission(permission);
+		current.setPermission(c -> permission);
+		return this;
+	}
+	
+	public OperationBuilder requires(Function<Context, String> permissionSource) {
+		current.setPermission(permissionSource);
 		return this;
 	}
 	

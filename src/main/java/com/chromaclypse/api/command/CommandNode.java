@@ -12,10 +12,14 @@ import org.bukkit.command.CommandSender;
 class CommandNode {
 	private static final String DYNAMIC_FILL = "<dynamic>";
 	private final int depth;
-	private String permission = "*";
 	private Map<String, CommandNode> children = new HashMap<>();
+	private Function<Context, String> permissionSource = CommandNode::defaultPermission;
 	private Function<Context, Boolean> operation = null;
 	private Function<Context, List<String>> suggestions = null;
+	
+	private static final String defaultPermission(Context context) {
+		return "*";
+	}
 	
 	CommandNode() {
 		this.depth = 0;
@@ -25,8 +29,8 @@ class CommandNode {
 		this.depth = depth;
 	}
 	
-	void setPermission(String permission) {
-		this.permission = permission;
+	void setPermission(Function<Context, String> permissionSource) {
+		this.permissionSource = permissionSource;
 	}
 	
 	void setOperation(Function<Context, Boolean> operation) {
@@ -70,7 +74,7 @@ class CommandNode {
 		CommandSender sender = context.Sender();
 		
 		List<String> result = children.entrySet().stream()
-				.filter(e -> sender.hasPermission(e.getValue().permission))
+				.filter(e -> sender.hasPermission(e.getValue().permissionSource.apply(context)))
 				.map(e -> e.getKey())
 				.collect(Collectors.toCollection(ArrayList::new));
 		
@@ -87,6 +91,7 @@ class CommandNode {
 	
 	boolean execute(Context context) {
 		CommandSender sender = context.Sender();
+		String permission = permissionSource.apply(context);
 		
 		if("*" != permission && "" != permission && !sender.hasPermission(permission)) {
 			throw new IllegalArgumentException("You don't have permission for that!");
